@@ -1,6 +1,6 @@
 # Task Manager - DevOps Full-Stack Project
 
-[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/devops-fullstack-monitoring/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/devops-fullstack-monitoring/actions)
+[![CI/CD Pipeline](https://github.com/ThongNguyen1510/devops-fullstack-monitoring/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YOUR_USERNAME/devops-fullstack-monitoring/actions)
 
 A production-ready Task Management application demonstrating modern DevOps practices with React, Node.js, PostgreSQL, Docker, CI/CD, and comprehensive monitoring.
 
