@@ -402,9 +402,8 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 
-**Your Name**  
-DevOps Engineer  
-[GitHub](https://github.com/YOUR_USERNAME) | [LinkedIn](https://linkedin.com/in/YOUR_PROFILE)
+Nguyen Luong Minh Thong   
+[GitHub](https://github.com/ThongNguyen1510) | [LinkedIn](https://www.linkedin.com/in/thongnguyen1510/)
 
 ## 🙏 Acknowledgments
 
