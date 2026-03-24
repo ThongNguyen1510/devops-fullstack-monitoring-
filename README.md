@@ -74,7 +74,7 @@ Monitoring Stack:
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/YOUR_USERNAME/devops-fullstack-monitoring.git
+git clone https://github.com/ThongNguyen1510/devops-fullstack-monitoring.git
 cd devops-fullstack-monitoring
 ```
 
