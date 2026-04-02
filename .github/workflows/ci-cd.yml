@@ -120,8 +120,11 @@ jobs:
           script: |
             cd /home/ubuntu/devops-fullstack-monitoring-
             
-            # Pull latest images
-            docker compose pull
+            # Pull latest images with retry logic
+            echo "Pulling Docker images..."
+            for i in 1 2 3; do
+              docker compose pull && break || (echo "Pull attempt $i failed, retrying in 10s..." && sleep 10)
+            done
             
             # Update code
             git pull origin main
@@ -136,16 +139,19 @@ jobs:
             docker compose down
             docker compose up -d
             
-            # Wait for containers to fully start and health checks to pass
+            # Wait for containers to fully start
             echo "Waiting for containers to start..."
-            sleep 30
+            sleep 45
             
             # Verify deployment
             echo "Checking container status..."
             docker compose ps
             
+            # Health check with retry logic
             echo "Testing health endpoint..."
-            curl -f http://localhost:5000/health || exit 1
+            for i in 1 2 3 4 5; do
+              curl -f http://localhost:5000/health && break || (echo "Health check attempt $i failed, retrying in 10s..." && sleep 10)
+            done || exit 1
             
             echo "✅ Deployment successful!"
 
