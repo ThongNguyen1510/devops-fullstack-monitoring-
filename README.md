@@ -1,18 +1,19 @@
 # Task Manager - DevOps Full-Stack Project
 
-[![CI/CD Pipeline](https://github.com/ThongNguyen1510/devops-fullstack-monitoring/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/ThongNguyen1510/devops-fullstack-monitoring/actions)
+[![CI/CD Pipeline](https://github.com/ThongNguyen1510/devops-fullstack-monitoring-/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/ThongNguyen1510/devops-fullstack-monitoring-/actions)
 
-A production-ready Task Management application demonstrating modern DevOps practices with React, Node.js, PostgreSQL, Docker, CI/CD, and comprehensive monitoring.
+A production-ready Task Management application demonstrating modern DevOps practices with React, Node.js, PostgreSQL, AWS S3, Docker, CI/CD, and comprehensive monitoring.
 
 ## 🎯 Project Overview
 
 This project showcases a complete DevOps workflow:
 - **Full-stack application**: React frontend + Node.js/Express backend + PostgreSQL database
+- **File Storage**: AWS S3 for task file attachments (images, documents)
 - **Containerization**: Docker & Docker Compose for all services
 - **CI/CD Pipeline**: Automated testing, building, and deployment with GitHub Actions
 - **Monitoring**: Prometheus (metrics) + Grafana (visualization) + Loki (logs)
 - **Infrastructure**: Nginx reverse proxy, PostgreSQL exporter
-- **Cloud Deployment**: AWS EC2 + RDS (free tier compatible)
+- **Cloud Deployment**: AWS EC2 + RDS + S3 (3 AWS services)
 
 ## 🏗️ Architecture
 
@@ -50,9 +51,10 @@ Monitoring Stack:
 
 ### Application
 - **Frontend**: React 18, Vite, Axios
-- **Backend**: Node.js 20, Express, Winston (logging)
+- **Backend**: Node.js 20, Express, Winston (logging), Multer (file upload)
 - **Database**: PostgreSQL 15
-- **API**: RESTful API with full CRUD operations
+- **Storage**: AWS S3 (file attachments with presigned URLs)
+- **API**: RESTful API with full CRUD operations + file management
 
 ### DevOps & Infrastructure
 - **Containerization**: Docker, Docker Compose
@@ -222,7 +224,7 @@ AWS_REGION           # AWS region (ap-southeast-2)
 # Create IAM user with S3 permissions
 ```
 
-3. **Configure EC2**
+4. **Configure EC2**
 ```bash
 # SSH to EC2
 ssh -i your-key.pem ubuntu@your-ec2-ip
@@ -352,24 +354,24 @@ curl http://localhost:5000/api/tasks
 devops-fullstack-monitoring/
 ├── backend/                 # Node.js/Express API
 │   ├── src/
-│   │   ├── config/         # Database & logger config
+│   │   ├── config/         # Database, logger & S3 config
 │   │   ├── middleware/     # Prometheus metrics
-│   │   ├── models/         # Task model
-│   │   ├── routes/         # API routes
+│   │   ├── models/         # Task & Attachment models
+│   │   ├── routes/         # Task & Attachment API routes
 │   │   └── server.js       # Express server
 │   ├── tests/              # Unit tests
 │   ├── Dockerfile
 │   └── package.json
 ├── frontend/               # React application
 │   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── services/      # API service
+│   │   ├── components/    # TaskList, FileAttachment components
+│   │   ├── services/      # API service (tasks + attachments)
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── Dockerfile
 │   └── package.json
 ├── database/              # PostgreSQL
-│   └── init.sql          # DB initialization
+│   └── init.sql          # DB initialization (tasks + task_attachments)
 ├── nginx/                # Reverse proxy
 │   └── nginx.conf
 ├── monitoring/           # Monitoring stack
@@ -392,6 +394,9 @@ devops-fullstack-monitoring/
 - Security headers in Nginx
 - npm audit in CI pipeline
 - PostgreSQL connection pooling
+- **S3 private bucket** with presigned URLs (1-hour expiry)
+- **IAM least-privilege** access for S3 operations
+- **File validation**: type whitelist + 10MB size limit
 
 ## 🐛 Troubleshooting
 
@@ -448,6 +453,7 @@ Nguyen Luong Minh Thong
 
 - React team for amazing frontend framework
 - Express.js for backend simplicity
+- AWS S3 for scalable file storage
 - Prometheus & Grafana for observability
 - Docker for containerization
 - GitHub Actions for CI/CD
