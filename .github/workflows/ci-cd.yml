@@ -135,9 +135,9 @@ jobs:
             export AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }}
             export AWS_REGION=${{ secrets.AWS_REGION }}
             
-            # Restart services with new images
+            # Restart services with rebuilt images
             docker compose down
-            docker compose up -d
+            docker compose up -d --build
             
             # Wait for containers to fully start
             echo "Waiting for containers to start..."
