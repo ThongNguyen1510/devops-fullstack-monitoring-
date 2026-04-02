@@ -1,19 +1,59 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import FileAttachment from './FileAttachment';
+import { attachmentService } from '../services/api';
 import './TaskList.css';
 
 function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
     const [newTask, setNewTask] = useState({ title: '', description: '' });
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [editForm, setEditForm] = useState({});
     const [expandedAttachments, setExpandedAttachments] = useState({});
+    const fileInputRef = useRef(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!newTask.title.trim()) return;
 
-        await onAddTask(newTask);
-        setNewTask({ title: '', description: '' });
+        setUploading(true);
+        try {
+            // 1. Create task first
+            const createdTask = await onAddTask(newTask);
+
+            // 2. Upload file if selected
+            if (selectedFile && createdTask?.id) {
+                await attachmentService.uploadAttachment(createdTask.id, selectedFile);
+                // Auto-expand attachments for new task
+                setExpandedAttachments((prev) => ({ ...prev, [createdTask.id]: true }));
+            }
+
+            // Reset form
+            setNewTask({ title: '', description: '' });
+            setSelectedFile(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        } catch (err) {
+            console.error('Error creating task with file:', err);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                e.target.value = '';
+                return;
+            }
+            setSelectedFile(file);
+        }
+    };
+
+    const removeSelectedFile = () => {
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
     const handleEdit = (task) => {
@@ -64,7 +104,40 @@ function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
                         onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
                         rows="3"
                     />
-                    <button type="submit" className="btn-primary">Add Task</button>
+
+                    {/* File Attachment Input */}
+                    <div className="form-file-section">
+                        <label className="file-select-btn" htmlFor="new-task-file">
+                            📎 Attach File
+                        </label>
+                        <input
+                            ref={fileInputRef}
+                            id="new-task-file"
+                            type="file"
+                            onChange={handleFileChange}
+                            accept="image/*,.pdf,.doc,.docx,.txt"
+                            hidden
+                        />
+                        {selectedFile && (
+                            <div className="selected-file-badge">
+                                <span className="selected-file-name">{selectedFile.name}</span>
+                                <span className="selected-file-size">
+                                    ({(selectedFile.size / 1024).toFixed(0)} KB)
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={removeSelectedFile}
+                                    className="selected-file-remove"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    <button type="submit" className="btn-primary" disabled={uploading}>
+                        {uploading ? '⏳ Creating...' : 'Add Task'}
+                    </button>
                 </form>
             </div>
 
@@ -141,3 +214,4 @@ function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
 }
 
 export default TaskList;
+

@@ -30,6 +30,7 @@ function App() {
         try {
             const newTask = await taskService.createTask(taskData);
             setTasks([newTask, ...tasks]);
+            return newTask;
         } catch (err) {
             setError('Failed to create task');
             console.error('Error creating task:', err);
