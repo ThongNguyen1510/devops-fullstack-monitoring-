@@ -92,7 +92,7 @@ function App() {
 
             <footer className="app-footer">
                 <p>Built with React + Node.js + PostgreSQL + Docker + GitHub Actions</p>
-                <p>Monitoring: Prometheus + Grafana + Loki</p>
+                <p>AWS: EC2 + RDS + S3 | Monitoring: Prometheus + Grafana + Loki</p>
             </footer>
         </div>
     );

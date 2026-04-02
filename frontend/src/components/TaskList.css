@@ -221,3 +221,20 @@ button {
 .btn-secondary:hover {
   background: #757575;
 }
+
+.btn-attach {
+  background: #7c4dff;
+  color: white;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.btn-attach:hover {
+  background: #651fff;
+}
+
+.btn-attach.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}

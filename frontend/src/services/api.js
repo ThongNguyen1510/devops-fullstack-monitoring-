@@ -36,4 +36,35 @@ export const taskService = {
     }
 };
 
+export const attachmentService = {
+    getAttachments: async (taskId) => {
+        const response = await api.get(`/tasks/${taskId}/attachments`);
+        return response.data;
+    },
+
+    uploadAttachment: async (taskId, file, onProgress) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await api.post(`/tasks/${taskId}/attachments`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: (progressEvent) => {
+                if (onProgress) {
+                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress(percent);
+                }
+            },
+        });
+        return response.data;
+    },
+
+    deleteAttachment: async (taskId, attachmentId) => {
+        const response = await api.delete(`/tasks/${taskId}/attachments/${attachmentId}`);
+        return response.data;
+    },
+};
+
 export default api;
+

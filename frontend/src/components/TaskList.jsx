@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import FileAttachment from './FileAttachment';
 import './TaskList.css';
 
 function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
     const [newTask, setNewTask] = useState({ title: '', description: '' });
     const [editingId, setEditingId] = useState(null);
     const [editForm, setEditForm] = useState({});
+    const [expandedAttachments, setExpandedAttachments] = useState({});
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -27,6 +29,13 @@ function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
         await onUpdateTask(id, editForm);
         setEditingId(null);
         setEditForm({});
+    };
+
+    const toggleAttachments = (taskId) => {
+        setExpandedAttachments((prev) => ({
+            ...prev,
+            [taskId]: !prev[taskId],
+        }));
     };
 
     const getStatusBadgeClass = (status) => {
@@ -104,10 +113,22 @@ function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask }) {
                                         <div className="task-footer">
                                             <small>Created: {new Date(task.created_at).toLocaleDateString()}</small>
                                             <div className="task-actions">
+                                                <button
+                                                    onClick={() => toggleAttachments(task.id)}
+                                                    className={`btn-attach ${expandedAttachments[task.id] ? 'active' : ''}`}
+                                                    title="Attachments"
+                                                >
+                                                    📎 Files
+                                                </button>
                                                 <button onClick={() => handleEdit(task)} className="btn-edit">✏️ Edit</button>
                                                 <button onClick={() => onDeleteTask(task.id)} className="btn-delete">🗑️ Delete</button>
                                             </div>
                                         </div>
+
+                                        {/* File Attachments Section */}
+                                        {expandedAttachments[task.id] && (
+                                            <FileAttachment taskId={task.id} />
+                                        )}
                                     </>
                                 )}
                             </div>

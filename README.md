@@ -29,10 +29,12 @@ This project showcases a complete DevOps workflow:
 │ React  │     │Node.js  │
 └────────┘     └────┬────┘
                     │
-              ┌─────▼──────┐
-              │ PostgreSQL │
-              │  Database  │
-              └────────────┘
+          ┌─────────┼─────────┐
+          │                   │
+    ┌─────▼──────┐    ┌───────▼──────┐
+    │ PostgreSQL │    │   AWS S3     │
+    │  (RDS)     │    │ Attachments  │
+    └────────────┘    └──────────────┘
 
 Monitoring Stack:
 ┌────────────┐  ┌──────────┐  ┌──────┐
@@ -61,7 +63,7 @@ Monitoring Stack:
   - Grafana - Dashboards & visualization
   - Loki - Log aggregation
   - Promtail - Log shipping
-- **Cloud**: AWS (EC2, RDS)
+- **Cloud**: AWS (EC2, RDS, S3)
 
 ## 📦 Quick Start
 
@@ -188,6 +190,10 @@ DOCKER_PASSWORD       # Docker Hub password/token
 EC2_HOST             # AWS EC2 public IP
 EC2_USERNAME         # SSH username (ubuntu)
 EC2_SSH_KEY          # Private SSH key
+AWS_ACCESS_KEY_ID    # AWS IAM access key
+AWS_SECRET_ACCESS_KEY # AWS IAM secret key
+AWS_S3_BUCKET        # S3 bucket name
+AWS_REGION           # AWS region (ap-southeast-2)
 ```
 
 ## ☁️ AWS Deployment
@@ -203,9 +209,17 @@ EC2_SSH_KEY          # Private SSH key
 
 2. **Setup RDS PostgreSQL**
 ```bash
-# Instance: t2.micro
+# Instance: db.t3.micro
 # Engine: PostgreSQL 15
 # Free tier eligible
+```
+
+3. **Setup S3 Bucket**
+```bash
+# Bucket: devops-task-manager-attachments
+# Region: ap-southeast-2
+# Block all public access: ON
+# Create IAM user with S3 permissions
 ```
 
 3. **Configure EC2**
@@ -242,6 +256,10 @@ DATABASE_URL=postgresql://user:password@your-rds-endpoint:5432/taskdb
 NODE_ENV=production
 PORT=5000
 CORS_ORIGIN=http://your-domain.com
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_S3_BUCKET=devops-task-manager-attachments
+AWS_REGION=ap-southeast-2
 ```
 
 ## 📝 API Documentation
@@ -290,6 +308,27 @@ Response: { "status": "healthy", "database": "connected" }
 ```http
 GET /metrics
 Response: Prometheus metrics in text format
+```
+
+**Get task attachments**
+```http
+GET /api/tasks/:id/attachments
+Response: Array of attachment objects with presigned download URLs
+```
+
+**Upload attachment**
+```http
+POST /api/tasks/:id/attachments
+Body: multipart/form-data with 'file' field
+Limits: Max 10MB, max 5 files per task
+Allowed: Images (jpg, png, gif, webp), PDF, DOC/DOCX, TXT
+Response: Created attachment object with download URL
+```
+
+**Delete attachment**
+```http
+DELETE /api/tasks/:id/attachments/:attachmentId
+Response: { "message": "Attachment deleted successfully" }
 ```
 
 ## 🧪 Testing

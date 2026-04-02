@@ -6,6 +6,7 @@ const logger = require('./config/logger');
 const pool = require('./config/database');
 const { register, metricsMiddleware } = require('./middleware/metrics');
 const taskRoutes = require('./routes/tasks');
+const attachmentRoutes = require('./routes/attachments');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +52,7 @@ app.get('/metrics', async (req, res) => {
 
 // API routes
 app.use('/api/tasks', taskRoutes);
+app.use('/api/tasks', attachmentRoutes);
 
 // 404 handler
 app.use((req, res) => {
